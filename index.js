@@ -45,8 +45,8 @@ app.post('/api/v1/products', (req, res) => {
 
 //access northwind product services using nodejs
 //mode1 to access northwind
-// app.get('/api/v1/Northwind/Products', (req, res) => {
-    app.get('/api/v1/Northwind/Products', async (req, res) => { //if we are doing any async call like await then we have to make the function aslo async
+//app.get('/api/v1/Northwind/Products', (req, res) => {
+app.get('/api/v1/Northwind/Products', async (req, res) => { //if we are doing any async call like await then we have to make the function aslo async
     //mode1 to access northwind
     //http://localhost:4000/api/v1/Northwind/Products ----postman request url
     //     axios.get('https://services.odata.org/v4/northwind/northwind.svc/Products?$format=json').then((results) => {
@@ -77,26 +77,33 @@ app.post('/api/v1/products', (req, res) => {
 })
 
 //filter query $filter
-// app.get('/api/v1/Northwind/Products/:id', (req, res) => {
-//  const ID = req.params.id
-//  const field = ID.match(/\s+(?==)/g)
-//  console.log(field)
-//     try {
-//         const results =  axios_instance.get('Products', {
+//http://localhost:4000/api/v1/Northwind/Products/SupplierID=2
+app.get('/api/v1/Northwind/Products/:id', async (req, res) => {
+    const ID = req.params.id
+    const field = ID.match(/\S+(?==)/g)[0]
+    const value = ID.split('=').pop()
+    console.log(value)
 
-//              params: {
+    const axios_instance = axios.create({
+        baseURL: 'https://services.odata.org/v4/northwind/northwind.svc'
+    })
 
-//              }
-//         })
-//         res.setHeader('Content-Type', 'application/json')
-//         res.status(200).send(JSON.stringify(results.data.value))
+    try {
+        const results = await axios_instance.get('Products', {
+
+            params: {
+            $filter: `${field} eq ${value}`
+            }
+        })
+        res.setHeader('Content-Type', 'application/json')
+        res.status(200).send(JSON.stringify(results.data.value))
 
 
-//     } catch (error) {
-//         res.status(400)
-//     }
+    } catch (error) {
+        res.status(400)
+    }
 
-// })
+})
 
 
 
